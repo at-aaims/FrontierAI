@@ -1,23 +1,35 @@
+# vLLM
 
 vLLM can only be used on Frontier either as:
 
 * apptainer using docker image
 * installation from source
-* `pip install vllm` does not work
 
- Docker Hub ROCMm vllm:
- docker hub has the ROCm version 6.4.1 (https://hub.docker.com/r/rocm/vllm/tags)
- However when we actually see the version inside the image, it is still ROCm 6.3
+`pip install vllm` does *not* work.
 
-Do not include the installation of any other package in the Docker image file, because it can override the initially installed packages and cause version compatibility issues.
-    
-library issue:
-ROCm image was built on gdbv0.32, whereas as Frontier has gdbv0.35 or .37
+Installing from source is quite slow and convoluted, using the docker image is recommended.
+Docker images are available here: https://hub.docker.com/r/rocm/vllm/tags
+The docker image contains ROCm, so no need to load the ROCm modules.
 
-apptainer command that worked for me:
+Example usage:
+```bash
+apptainer build ./vllm.sif docker://rocm/vllm:rocm6.4.1_vllm_0.10.1_20250909
+apptainer exec ./vllm.sif vllm serve nvidia/Llama-3.1-Nemotron-Nano-4B-v1.1 --tp 1
+```
 
-"apptainer exec --fakeroot --writable-tmpfs ./vllm_rocm_64.sif"
+## Internet
+Note that by default Frontier job nodes don't have internet access, which can cause issues when vLLM
+tries to fetch huggingface models. Either pre-fetch the models on the login node with `hf download`
+or set up the internet proxy:
 
-It should include  both options; otherwise, it would give compatibility errors
+```bash
+export https_proxy='http://proxy.ccs.ornl.gov:3128'
+export http_proxy='http://proxy.ccs.ornl.gov:3128'
+export no_proxy='localhost,127.0.0.1'
+```
 
-No need to load ROCm modules 
+## Other issues
+Frontier's MI250 GPUs do not support FP4 or FP8  which can cause some models taking much more VRAM
+or not working at all. For instance the gpt-oss models won't run. See
+- FP8, no support, https://docs.vllm.ai/en/latest/features/quantization/index.html
+- FP4, no support, https://docJs.vllm.ai/en/latest/features/quantization/index.html
