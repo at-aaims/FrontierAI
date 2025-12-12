@@ -29,7 +29,7 @@ export no_proxy='localhost,127.0.0.1'
 ```
 
 ## Other issues
-Frontier's MI250 GPUs do not support FP4 or FP8  which can cause some models taking much more VRAM
-or not working at all. For instance the gpt-oss models won't run. See
+Frontier's MI250 GPUs do not support FP4 or FP8  which can cause some models to take much more ram or have issues running. On recent versions of vLLM FP4 quantized models like gpt-oss will fall back to FP16 properly.
+See
 - FP8, no support, https://docs.vllm.ai/en/latest/features/quantization/index.html
 - FP4, no support, https://docJs.vllm.ai/en/latest/features/quantization/index.html
