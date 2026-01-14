@@ -1,6 +1,6 @@
 #!/bin/bash 
 #SBATCH -A stf218-arch 
-#SBATCH -J grpo-ds 
+#SBATCH -J sft-ds 
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=1 # ONE task per node 
 #SBATCH --gpus-per-node=4 
